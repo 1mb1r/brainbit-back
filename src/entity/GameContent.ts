@@ -9,6 +9,21 @@ import {
 import { Game } from './Game';
 import { Client } from './Client';
 
+export interface Prompt {
+  prompt: string;
+}
+
+export interface Action {
+  title: string;
+  isLocked: boolean;
+  effect: Prompt;
+}
+
+export interface Exam {
+  title: string;
+  effect: Prompt;
+}
+
 @Entity({
   name: 'game_contents',
 })
@@ -33,4 +48,16 @@ export class GameContent {
     nullable: true,
   })
   prompt: string;
+
+  @Column({
+    type: 'json',
+    nullable: true,
+  })
+  actions: Action[];
+
+  @Column({
+    type: 'json',
+    nullable: true,
+  })
+  exam: Exam;
 }

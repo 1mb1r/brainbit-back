@@ -8,12 +8,17 @@ export class ClientService {
   constructor(private readonly clientRepository: ClientRepository) {}
 
   findAll() {
-    const clients = this.clientRepository.find();
+    const clients = this.clientRepository.find({
+      relations: ['device', 'role', 'games'],
+    });
     return clients;
   }
 
   findOne(id: number) {
-    const client = this.clientRepository.findOne({ where: { id } });
+    const client = this.clientRepository.findOne({
+      where: { id },
+      relations: ['device', 'role', 'games'],
+    });
     return client;
   }
 

@@ -18,14 +18,16 @@ export class GameService {
   }
 
   findAll() {
-    const games = this.gameRepository.find();
+    const games = this.gameRepository.find({
+      relations: ['clients.role', 'gameContents'],
+    });
     return games;
   }
 
   async findOne(id: number) {
     const game = await this.gameRepository.findOne({
       where: { id },
-      relations: ['clients'],
+      relations: ['clients.role', 'gameContents'],
     });
 
     if (!game) {
@@ -46,7 +48,7 @@ export class GameService {
   async joinGame(id: number, joinGameDto: JoinGameDto) {
     const game = await this.gameRepository.findOne({
       where: { id },
-      relations: ['clients'],
+      relations: ['clients.role', 'gameContents'],
     });
 
     if (!game) {
@@ -84,6 +86,7 @@ export class GameService {
   async startGame(id: number) {
     const game = await this.gameRepository.findOne({
       where: { id },
+      relations: ['clients.role', 'gameContents'],
     });
 
     if (!game) {
