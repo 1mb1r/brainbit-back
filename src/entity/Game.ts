@@ -32,7 +32,7 @@ export class Game {
   })
   state: string;
 
-  @ManyToMany(() => Client)
+  @ManyToMany(() => Client, (client) => client.games)
   @JoinTable()
   clients: Client[];
 

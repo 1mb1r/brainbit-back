@@ -1,1 +1,1 @@
-export type GameState = 'created' | 'started' | 'closed';
+export type GameState = 'created' | 'started' | 'finished';

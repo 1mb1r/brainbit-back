@@ -12,6 +12,7 @@ import { LogModule } from './log/log.module';
 import { GameModule } from './game/game.module';
 import { GameContentModule } from './game-content/game-content.module';
 import { OpenaiModule } from './openai/openai.module';
+import { MemoryStorageModule } from './memory-storage/memory-storage.module';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { OpenaiModule } from './openai/openai.module';
     GameModule,
     GameContentModule,
     OpenaiModule,
+    MemoryStorageModule,
   ],
   controllers: [AppController],
   providers: [AppService],
