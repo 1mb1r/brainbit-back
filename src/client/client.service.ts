@@ -3,10 +3,16 @@ import { Injectable } from '@nestjs/common';
 import { ClientRepository } from './client.repository';
 import { CreateClientDto } from './dto/create-client.dto';
 import { UpdateClientDto } from './dto/update-client.dto';
+import { DeviceRepository } from 'src/device/device.repository';
+import { RoleRepository } from 'src/role/role.repository';
 
 @Injectable()
 export class ClientService {
-  constructor(private readonly clientRepository: ClientRepository) {}
+  constructor(
+    private readonly clientRepository: ClientRepository,
+    private readonly deviceRepository: DeviceRepository,
+    private readonly roleRepository: RoleRepository,
+  ) {}
 
   findAll() {
     const clients = this.clientRepository.find({
@@ -37,11 +43,26 @@ export class ClientService {
     return game.id;
   }
 
-  create(createClientDto: CreateClientDto) {
-    return this.clientRepository.save(createClientDto);
+  async create(createClientDto: CreateClientDto) {
+    const device = await this.deviceRepository.findOne({
+      where: { id: createClientDto.deviceId },
+    });
+    const client = await this.clientRepository.create({
+      ...createClientDto,
+      device,
+    });
+    return await this.clientRepository.save(client);
   }
 
-  update(id: number, updateClientDto: UpdateClientDto) {
-    return this.clientRepository.update(id, updateClientDto);
+  async update(id: number, updateClientDto: UpdateClientDto) {
+    const role = await this.roleRepository.findOne({
+      where: { id: updateClientDto.roleId },
+    });
+    await this.clientRepository.update(id, { role });
+
+    return await this.clientRepository.findOne({
+      where: { id },
+      relations: ['device', 'role', 'games'],
+    });
   }
 }
