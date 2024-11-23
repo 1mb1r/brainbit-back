@@ -8,7 +8,7 @@ export class RoleService {
   constructor(private readonly roleRepository: RoleRepository) {}
 
   findAll() {
-    const roles = this.roleRepository.find();
+    const roles = this.roleRepository.find({ relations: ['clients'] });
     return roles;
   }
 

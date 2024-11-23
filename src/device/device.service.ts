@@ -8,12 +8,17 @@ export class DeviceService {
   constructor(private readonly deviceRepository: DeviceRepository) {}
 
   findAll() {
-    const devices = this.deviceRepository.find();
+    const devices = this.deviceRepository.find({
+      relations: ['clients.role', 'clients.games'],
+    });
     return devices;
   }
 
   findOne(id: number) {
-    const device = this.deviceRepository.findOne({ where: { id } });
+    const device = this.deviceRepository.findOne({
+      where: { id },
+      relations: ['clients.role', 'clients.games'],
+    });
     return device;
   }
 

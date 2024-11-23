@@ -3,14 +3,19 @@ import { Controller, Get, Post, Body, Patch, Param } from '@nestjs/common';
 import { GameService } from './game.service';
 import { UpdateGameDto } from './dto/update-game.dto';
 import { JoinGameDto } from './dto/join-game.dto';
+import { CreateGameRequestDto } from './dto/create-game.dto';
 
 @Controller('games')
 export class GameController {
   constructor(private readonly gameService: GameService) {}
 
   @Post()
-  create() {
-    return this.gameService.create({ state: 'created' });
+  create(@Body() body: CreateGameRequestDto) {
+    return this.gameService.create({
+      state: 'created',
+      name: body.name,
+      description: body.description,
+    });
   }
 
   @Post(':id/join')
