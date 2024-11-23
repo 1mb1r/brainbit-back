@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 
 import { ClientRepository } from './client.repository';
+import { CreateClientDto } from './dto/create-client.dto';
 
 @Injectable()
 export class ClientService {
@@ -28,5 +29,9 @@ export class ClientService {
     const game = client.games.find((game) => game.state !== 'finished');
 
     return game.id;
+  }
+
+  create(createClientDto: CreateClientDto) {
+    return this.clientRepository.save(createClientDto);
   }
 }

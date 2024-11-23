@@ -5,6 +5,7 @@ import {
   JoinColumn,
   ManyToMany,
   OneToMany,
+  Column,
 } from 'typeorm';
 
 import { Device } from './Device';
@@ -18,6 +19,9 @@ import { GameContent } from './GameContent';
 export class Client {
   @PrimaryGeneratedColumn()
   id: number;
+
+  @Column()
+  name: string;
 
   @ManyToOne(() => Device, (device) => device.clients)
   @JoinColumn()

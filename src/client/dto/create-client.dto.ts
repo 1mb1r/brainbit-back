@@ -1,1 +1,5 @@
-export class CreateClientDto {}
+export class CreateClientDto {
+  deviceId: number;
+  roleId: number;
+  name: string;
+}
