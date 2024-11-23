@@ -122,9 +122,12 @@ export class GameService {
     game.time_start = new Date();
     game.currentPlayer = playerNames[RoleHorror.maniac];
 
+    const gptData = JSON.parse(data.choices[0].message.content);
+
     const gameContent = this.gameContentRepository.create({
-      text: JSON.parse(data.choices[0].message.content).text,
+      text: gptData.text,
       prompt,
+      order: gptData.order,
       client: playerNames[RoleHorror.maniac],
     });
     await this.gameContentRepository.save(gameContent);

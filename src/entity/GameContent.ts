@@ -44,6 +44,9 @@ export class GameContent {
   })
   text: string;
 
+  @Column()
+  order: number;
+
   @Column({
     nullable: true,
   })
