@@ -1,0 +1,25 @@
+version: '3'
+networks:
+  backend:
+    driver: bridge
+services:
+### PostgreSQL ###########################################
+    db:
+      build: ./docker/postgres
+      volumes:
+        - ./.docker/data/postgres:/var/lib/postgresql/data
+      ports:
+        - "5444:5432"
+      environment:
+        - POSTGRES_DB=brainbit
+        - POSTGRES_USER=brainbit
+        - POSTGRES_PASSWORD=brainbit
+      networks:
+        - backend
+  ### NestJs ################################################
+    nest:
+      build: ./
+      ports:
+        - "3001:3000"
+      networks:
+        - backend

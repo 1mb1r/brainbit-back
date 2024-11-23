@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 
 import { DeviceRepository } from './device.repository';
+import { CreateDeviceDto } from './dto/create-device.dto';
 
 @Injectable()
 export class DeviceService {
@@ -14,5 +15,9 @@ export class DeviceService {
   findOne(id: number) {
     const device = this.deviceRepository.findOne({ where: { id } });
     return device;
+  }
+
+  create(createDeviceDto: CreateDeviceDto) {
+    return this.deviceRepository.save(createDeviceDto);
   }
 }
