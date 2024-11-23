@@ -5,12 +5,22 @@ import { UpdateGameDto } from './dto/update-game.dto';
 import { GameRepository } from './game.repository';
 import { JoinGameDto } from './dto/join-game.dto';
 import { ClientRepository } from '../client/client.repository';
+import { OpenaiService } from 'src/openai/openai.service';
+import { generatePrologPrompt } from 'src/prompt/promptGenerator';
+import { GameContentRepository } from 'src/game-content/game-content.repository';
+
+enum RoleHorror {
+  maniac = 'maniac',
+  victim = 'victim',
+}
 
 @Injectable()
 export class GameService {
   constructor(
     private readonly gameRepository: GameRepository,
     private readonly clientRepository: ClientRepository,
+    private readonly openaiService: OpenaiService,
+    private readonly gameContentRepository: GameContentRepository,
   ) {}
 
   create(createGameDto: CreateGameDto) {
@@ -96,7 +106,30 @@ export class GameService {
       );
     }
 
+    const playerNames = {};
+
+    game.clients.forEach((client) => {
+      playerNames[client.role.name] = client;
+    });
+
+    const prompt = generatePrologPrompt(
+      playerNames[RoleHorror.maniac].name,
+      playerNames[RoleHorror.victim].name,
+    );
+
+    const data = await this.openaiService.generateText(prompt);
     game.state = 'started';
+    game.time_start = new Date();
+    game.currentPlayer = playerNames[RoleHorror.maniac];
+
+    const gameContent = this.gameContentRepository.create({
+      text: JSON.parse(data.choices[0].message.content).text,
+      prompt,
+      client: playerNames[RoleHorror.maniac],
+    });
+    await this.gameContentRepository.save(gameContent);
+
+    game.gameContents.push(gameContent);
 
     return await this.gameRepository.save(game);
   }

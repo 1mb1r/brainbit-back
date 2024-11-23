@@ -11,5 +11,6 @@ import { OpenaiModule } from 'src/openai/openai.module';
   imports: [TypeOrmModule.forFeature([GameContent]), OpenaiModule],
   controllers: [GameContentController],
   providers: [GameContentService, GameContentRepository],
+  exports: [GameContentRepository],
 })
 export class GameContentModule {}
