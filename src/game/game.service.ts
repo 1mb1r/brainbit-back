@@ -22,8 +22,8 @@ export class GameService {
     return games;
   }
 
-  findOne(id: number) {
-    const game = this.gameRepository.findOne({
+  async findOne(id: number) {
+    const game = await this.gameRepository.findOne({
       where: { id },
       relations: ['clients'],
     });
@@ -77,6 +77,23 @@ export class GameService {
     }
 
     game.clients.push(client);
+
+    return await this.gameRepository.save(game);
+  }
+
+  async startGame(id: number) {
+    const game = await this.gameRepository.findOne({
+      where: { id },
+    });
+
+    if (!game) {
+      throw new HttpException(
+        `Game with ID ${id} not found`,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    game.state = 'started';
 
     return await this.gameRepository.save(game);
   }

@@ -18,6 +18,11 @@ export class GameController {
     return this.gameService.joinGame(+id, joinGameDto);
   }
 
+  @Post(':id/start')
+  startGame(@Param('id') id: string) {
+    return this.gameService.startGame(+id);
+  }
+
   @Get()
   findAll() {
     return this.gameService.findAll();

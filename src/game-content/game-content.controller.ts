@@ -11,10 +11,14 @@ import {
 import { GameContentService } from './game-content.service';
 import { CreateGameContentDto } from './dto/create-game-content.dto';
 import { UpdateGameContentDto } from './dto/update-game-content.dto';
+import { OpenaiService } from 'src/openai/openai.service';
 
 @Controller('game-contents')
 export class GameContentController {
-  constructor(private readonly gameContentService: GameContentService) {}
+  constructor(
+    private readonly gameContentService: GameContentService,
+    private readonly openaiService: OpenaiService,
+  ) {}
 
   @Post()
   create(@Body() createGameContentDto: CreateGameContentDto) {

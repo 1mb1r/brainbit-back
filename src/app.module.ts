@@ -11,6 +11,7 @@ import { ClientModule } from './client/client.module';
 import { LogModule } from './log/log.module';
 import { GameModule } from './game/game.module';
 import { GameContentModule } from './game-content/game-content.module';
+import { OpenaiModule } from './openai/openai.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { GameContentModule } from './game-content/game-content.module';
     LogModule,
     GameModule,
     GameContentModule,
+    OpenaiModule,
   ],
   controllers: [AppController],
   providers: [AppService],
