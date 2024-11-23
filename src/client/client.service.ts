@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 
 import { ClientRepository } from './client.repository';
 import { CreateClientDto } from './dto/create-client.dto';
+import { UpdateClientDto } from './dto/update-client.dto';
 
 @Injectable()
 export class ClientService {
@@ -38,5 +39,9 @@ export class ClientService {
 
   create(createClientDto: CreateClientDto) {
     return this.clientRepository.save(createClientDto);
+  }
+
+  update(id: number, updateClientDto: UpdateClientDto) {
+    return this.clientRepository.update(id, updateClientDto);
   }
 }
