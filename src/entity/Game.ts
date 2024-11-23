@@ -27,6 +27,12 @@ export class Game {
   })
   time_end: Date;
 
+  @Column()
+  name: string;
+
+  @Column()
+  description: string;
+
   @Column({
     nullable: true,
   })
