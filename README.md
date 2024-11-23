@@ -16,3 +16,8 @@ $ npm run start:dev
 # production mode
 $ npm run start:prod
 ```
+
+# run docker
+```bash
+$ docker-compose -f docker-compose.local.yml up --build  
+```
