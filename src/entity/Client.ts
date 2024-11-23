@@ -6,6 +6,7 @@ import {
   ManyToMany,
   OneToMany,
   Column,
+  OneToOne,
 } from 'typeorm';
 
 import { Device } from './Device';
@@ -36,4 +37,7 @@ export class Client {
 
   @OneToMany(() => GameContent, (gameContent) => gameContent.client)
   gameContents: GameContent[];
+
+  @OneToOne(() => Game, (game) => game.currentPlayer)
+  currentGame: Game;
 }

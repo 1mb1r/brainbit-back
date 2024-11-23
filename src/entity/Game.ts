@@ -5,6 +5,8 @@ import {
   ManyToMany,
   JoinTable,
   OneToMany,
+  OneToOne,
+  JoinColumn,
 } from 'typeorm';
 
 import { Client } from './Client';
@@ -44,4 +46,8 @@ export class Game {
 
   @OneToMany(() => GameContent, (gameContent) => gameContent.game)
   gameContents: GameContent[];
+
+  @OneToOne(() => Client, (client) => client.currentGame)
+  @JoinColumn()
+  currentPlayer: Client;
 }
