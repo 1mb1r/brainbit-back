@@ -6,8 +6,15 @@ import { GameRepository } from './game.repository';
 import { JoinGameDto } from './dto/join-game.dto';
 import { ClientRepository } from '../client/client.repository';
 import { OpenaiService } from 'src/openai/openai.service';
-import { generatePrologPrompt } from 'src/prompt/promptGenerator';
+import {
+  generateActionsPrompt,
+  generatePrologPrompt,
+  generateNextStoryPrompt,
+} from 'src/prompt/promptGenerator';
 import { GameContentRepository } from 'src/game-content/game-content.repository';
+import { GetActionsDto } from './dto/get-actions.dto';
+import { MemoryStorageService } from 'src/memory-storage/memory-storage.service';
+import { ContinueGameDto } from './dto/continue-game.dto';
 
 enum RoleHorror {
   maniac = 'maniac',
@@ -21,6 +28,7 @@ export class GameService {
     private readonly clientRepository: ClientRepository,
     private readonly openaiService: OpenaiService,
     private readonly gameContentRepository: GameContentRepository,
+    private readonly memoryStorageService: MemoryStorageService,
   ) {}
 
   create(createGameDto: CreateGameDto) {
@@ -124,10 +132,15 @@ export class GameService {
 
     const gptData = JSON.parse(data.choices[0].message.content);
 
+    const dalleData = await this.openaiService.generateImage(gptData.text);
+
     const gameContent = this.gameContentRepository.create({
       text: gptData.text,
       prompt,
       order: gptData.order,
+      time: gptData.time,
+      description: gptData.description,
+      image: dalleData.data[0].url,
       client: playerNames[RoleHorror.maniac],
     });
     await this.gameContentRepository.save(gameContent);
@@ -135,5 +148,103 @@ export class GameService {
     game.gameContents.push(gameContent);
 
     return await this.gameRepository.save(game);
+  }
+
+  async createActions(id: number, getActionsDto: GetActionsDto) {
+    const game = await this.gameRepository.findOne({
+      where: { id },
+      relations: ['clients.role', 'gameContents'],
+    });
+
+    if (!game) {
+      throw new HttpException(
+        `Game with ID ${id} not found`,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    const client = await this.clientRepository.findOne({
+      where: { id: getActionsDto.clientId },
+      relations: ['device', 'role'],
+    });
+
+    // const brainbitData = this.memoryStorageService.get(
+    //   client.device.mac_address,
+    // );
+
+    const brainbitData = this.generateConcentrationArray();
+
+    const prompt = generateActionsPrompt(client.role.name, brainbitData);
+
+    const data = await this.openaiService.generateText(prompt);
+    const gptData = JSON.parse(data.choices[0].message.content);
+
+    const gameContent = this.gameContentRepository.create({
+      prompt,
+      client: client,
+      actions: gptData,
+    });
+    return await this.gameContentRepository.save(gameContent);
+  }
+
+  async continueGame(id: number, continueGameDto: ContinueGameDto) {
+    const game = await this.gameRepository.findOne({
+      where: { id },
+      relations: ['clients.role', 'gameContents'],
+    });
+
+    if (!game) {
+      throw new HttpException(
+        `Game with ID ${id} not found`,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    const client = await this.clientRepository.findOne({
+      where: { id: continueGameDto.clientId },
+      relations: ['device', 'role'],
+    });
+
+    const nextClient = game.clients.find((cl) => cl.id !== client.id);
+
+    const prompt = generateNextStoryPrompt(
+      continueGameDto.prompt,
+      continueGameDto.effect,
+    );
+
+    const data = await this.openaiService.generateText(prompt);
+    game.currentPlayer = nextClient;
+
+    const gptData = JSON.parse(data.choices[0].message.content);
+
+    const dalleData = await this.openaiService.generateImage(gptData.text);
+
+    const gameContent = this.gameContentRepository.create({
+      text: gptData.text,
+      prompt,
+      order: gptData.order,
+      time: gptData.time,
+      description: gptData.description,
+      image: dalleData.data[0].url,
+      client: nextClient,
+    });
+    await this.gameContentRepository.save(gameContent);
+
+    game.gameContents.push(gameContent);
+
+    return await this.gameRepository.save(game);
+  }
+
+  generateConcentrationArray() {
+    const result = [];
+    let currentValue = Math.floor(Math.random() * 101);
+
+    for (let i = 0; i < 5; i++) {
+      result.push(currentValue);
+
+      const change = Math.floor(Math.random() * 21) - 10;
+      currentValue = Math.min(100, Math.max(0, currentValue + change));
+    }
+
+    return result;
   }
 }
