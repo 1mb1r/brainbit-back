@@ -199,6 +199,11 @@ export class GameService {
     const game = await this.gameRepository.findOne({
       where: { id },
       relations: ['clients.role', 'gameContents'],
+      order: {
+        gameContents: {
+          order: 'ASC',
+        },
+      },
     });
 
     if (!game) {
@@ -217,6 +222,7 @@ export class GameService {
     const gameContents = game.gameContents.filter((gc) => gc.order !== null);
     const lastGameContent = gameContents[gameContents.length - 1];
     const order = lastGameContent.order + 1;
+
     const prompt = generateNextStoryPrompt(
       continueGameDto.prompt,
       continueGameDto.effect,
