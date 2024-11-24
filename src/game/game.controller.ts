@@ -4,6 +4,8 @@ import { GameService } from './game.service';
 import { UpdateGameDto } from './dto/update-game.dto';
 import { JoinGameDto } from './dto/join-game.dto';
 import { CreateGameRequestDto } from './dto/create-game.dto';
+import { GetActionsDto } from './dto/get-actions.dto';
+import { ContinueGameDto } from './dto/continue-game.dto';
 
 @Controller('games')
 export class GameController {
@@ -41,5 +43,18 @@ export class GameController {
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateGameDto: UpdateGameDto) {
     return this.gameService.update(+id, updateGameDto);
+  }
+
+  @Post(':id/actions')
+  createActions(@Param('id') id: string, @Body() getActionsDto: GetActionsDto) {
+    return this.gameService.createActions(+id, getActionsDto);
+  }
+
+  @Post(':id/continue')
+  continueGame(
+    @Param('id') id: string,
+    @Body() continueGameDto: ContinueGameDto,
+  ) {
+    return this.gameService.continueGame(+id, continueGameDto);
   }
 }

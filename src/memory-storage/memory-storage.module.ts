@@ -8,5 +8,6 @@ import { ClientModule } from 'src/client/client.module';
   imports: [ClientModule],
   controllers: [MemoryStorageController],
   providers: [MemoryStorageService],
+  exports: [MemoryStorageService],
 })
 export class MemoryStorageModule {}

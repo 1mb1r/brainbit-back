@@ -44,7 +44,24 @@ export class GameContent {
   })
   text: string;
 
-  @Column()
+  @Column({
+    nullable: true,
+  })
+  time: string;
+
+  @Column({
+    nullable: true,
+  })
+  image: string;
+
+  @Column({
+    nullable: true,
+  })
+  description: string;
+
+  @Column({
+    nullable: true,
+  })
   order: number;
 
   @Column({

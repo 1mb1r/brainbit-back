@@ -17,7 +17,7 @@ export function generatePrologPrompt(maniacName: string, victimName: string) {
     }`;
 }
 
-export function generateActionsPrompt(role: string, data: number[]) {
+export function generateActionsPrompt(role: string, data: number[] = []) {
   return `Ты создаешь варианты действий для игрока, который участвует в интерактивной хоррор-истории. Игрок (маньяк или жертва) совершает ход, выбирая одно из предложенных действий. Ты получаешь массив данных концентрации игрока (числа от 0 до 100, например: [21, 33, 55, 73, 62]) и должен предложить четыре возможных действия.
 
       - Каждое действие описывается в формате JSON с полями:
