@@ -46,6 +46,11 @@ export class GameService {
     const game = await this.gameRepository.findOne({
       where: { id },
       relations: ['clients.role', 'gameContents'],
+      order: {
+        gameContents: {
+          order: 'ASC',
+        },
+      },
     });
 
     if (!game) {
@@ -137,7 +142,7 @@ export class GameService {
     const gameContent = this.gameContentRepository.create({
       text: gptData.text,
       prompt,
-      order: gptData.order,
+      order: 0,
       time: gptData.time,
       description: gptData.description,
       image: dalleData.data[0].url,
@@ -167,16 +172,16 @@ export class GameService {
       relations: ['device', 'role'],
     });
 
-    const testBrainbitData = this.memoryStorageService.get(
-      client.device.mac_address,
-    );
+    // const testBrainbitData = this.memoryStorageService.get(
+    //   client.device.mac_address,
+    // );
     // console.log(testBrainbitData[0].concentration);
 
-    // const brainbitData = this.generateConcentrationArray();
+    const brainbitData = this.generateConcentrationArray();
 
     const prompt = generateActionsPrompt(
       client.role.name,
-      testBrainbitData[0].concentration,
+      brainbitData[0].concentration,
     );
 
     const data = await this.openaiService.generateText(prompt);
@@ -209,10 +214,13 @@ export class GameService {
     });
 
     const nextClient = game.clients.find((cl) => cl.id !== client.id);
-
+    const gameContents = game.gameContents.filter((gc) => gc.order !== null);
+    const lastGameContent = gameContents[gameContents.length - 1];
+    const order = lastGameContent.order + 1;
     const prompt = generateNextStoryPrompt(
       continueGameDto.prompt,
       continueGameDto.effect,
+      order,
     );
 
     const data = await this.openaiService.generateText(prompt);
@@ -225,7 +233,7 @@ export class GameService {
     const gameContent = this.gameContentRepository.create({
       text: gptData.text,
       prompt,
-      order: gptData.order,
+      order: order,
       time: gptData.time,
       description: gptData.description,
       image: dalleData.data[0].url,
