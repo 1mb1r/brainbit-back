@@ -31,14 +31,14 @@ export class MemoryStorageController {
       ]);
     }
     const gameData = deviceData.find((game) => game.gameId === gameId);
-    if (gameData.concentration.length < 10) {
+    if (gameData.concentration.length < 5) {
       gameData.concentration.push(createMemoryStorageDto.data.concentration);
     } else {
       gameData.concentration.shift();
       gameData.concentration.push(createMemoryStorageDto.data.concentration);
     }
 
-    if (gameData.relaxation.length < 10) {
+    if (gameData.relaxation.length < 5) {
       gameData.relaxation.push(createMemoryStorageDto.data.relaxation);
     } else {
       gameData.relaxation.shift();
