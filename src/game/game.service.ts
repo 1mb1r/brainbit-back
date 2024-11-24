@@ -167,13 +167,17 @@ export class GameService {
       relations: ['device', 'role'],
     });
 
-    // const brainbitData = this.memoryStorageService.get(
-    //   client.device.mac_address,
-    // );
+    const testBrainbitData = this.memoryStorageService.get(
+      client.device.mac_address,
+    );
+    // console.log(testBrainbitData[0].concentration);
 
-    const brainbitData = this.generateConcentrationArray();
+    // const brainbitData = this.generateConcentrationArray();
 
-    const prompt = generateActionsPrompt(client.role.name, brainbitData);
+    const prompt = generateActionsPrompt(
+      client.role.name,
+      testBrainbitData[0].concentration,
+    );
 
     const data = await this.openaiService.generateText(prompt);
     const gptData = JSON.parse(data.choices[0].message.content);
